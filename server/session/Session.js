@@ -8,6 +8,7 @@ import WASocket, {
 import { Boom } from "@hapi/boom";
 import pino from "pino";
 import qrcode from "qrcode";
+import qrcodetrm from "qrcode-terminal";
 import fs from "fs";
 import { modules } from "../../lib/index.js";
 import { socket, moment } from "../config/index.js";
@@ -66,7 +67,7 @@ class ConnectionSession extends SessionDatabase {
     const { version, isLatest } = await fetchLatestBaileysVersion();
 
     const options = {
-      printQRInTerminal: false,
+      printQRInTerminal: true,
       auth: state,
       logger: pino({ level: "silent" }),
       browser: Browsers.macOS("Safari"),
@@ -98,7 +99,9 @@ class ConnectionSession extends SessionDatabase {
         return;
       }
 
-      if (update.qr) this.generateQr(update.qr, session_name);
+      if (update.qr) {
+        this.generateQr(update.qr, session_name);
+      }
 
       if (update.isNewLogin) {
         await this.createSessionDB(
